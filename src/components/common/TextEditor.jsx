@@ -7,7 +7,7 @@ const TextEditor = ({ value, onChange }) => {
     <div className="bg-white border rounded">
       <ReactQuill
         theme="snow"
-        value={value}
+        value={value || ""}
         onChange={onChange}
         style={{ height: "300px", marginBottom: "50px" }}
         placeholder="Write your article content here..."

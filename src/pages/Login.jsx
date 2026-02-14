@@ -1,100 +1,527 @@
-// import React, { useState, useEffect } from "react";
-// import { Form, Button, Card, Container, Row, Col } from "react-bootstrap";
+// // // import React, { useState, useEffect } from "react";
+// // // import { Form, Button, Card, Container, Row, Col } from "react-bootstrap";
+// // // import { useNavigate } from "react-router-dom";
+// // // import { toast } from "react-toastify";
+// // // import { adminLogin } from "../Services/adminService";
+
+// // // const Login = () => {
+// // //   const navigate = useNavigate();
+// // //   const [email, setEmail] = useState("");
+// // //   const [password, setPassword] = useState("");
+// // //   const [loading, setLoading] = useState(false);
+
+// // //   // Component mount check - CRITICAL for debugging
+// // //   useEffect(() => {
+// // //     try {
+// // //       console.log("=== LOGIN COMPONENT MOUNTED ===");
+// // //       console.log("Component is rendering successfully");
+// // //     } catch (e) {
+// // //       alert("Error in useEffect: " + e.message);
+// // //     }
+// // //     return () => {
+// // //       try {
+// // //         console.log("=== LOGIN COMPONENT UNMOUNTED ===");
+// // //       } catch (e) {
+// // //         alert("Error in cleanup: " + e.message);
+// // //       }
+// // //     };
+// // //   }, []);
+
+// // //   const handleLogin = async (e) => {
+// // //     e.preventDefault();
+
+// // //     try {
+// // //       console.log("=== LOGIN CLICKED ===");
+// // //       console.log("Email:", email);
+
+// // //       if (!email || !password) {
+// // //         console.error("Missing email or password");
+// // //         toast.error("Please enter email and password");
+// // //         return;
+// // //       }
+
+// // //       setLoading(true);
+// // //       console.log("Sending login request...");
+
+// // //       const response = await adminLogin({
+// // //         email: email.trim(),
+// // //         password: password.trim(),
+// // //       });
+// // //       console.log("Response received:", response);
+
+// // //       if (response && response.status === true) {
+// // //         console.log("✅ LOGIN SUCCESS");
+// // //         toast.success(response.message || "Login Successful");
+// // //         navigate("/admin/dashboard");
+// // //       } else {
+// // //         console.error("Login failed");
+// // //         toast.error(response?.message || "Login Failed");
+// // //       }
+// // //     } catch (error) {
+// // //       console.error("❌ LOGIN ERROR");
+// // //       console.error("Error full object:", error);
+// // //       console.error("Error.code:", error.code);
+// // //       console.error("Error.message:", error.message);
+// // //       console.error("Error.response:", error.response);
+// // //       console.error("Error.request:", error.request);
+
+// // //       let errorMsg = "An error occurred";
+
+// // //       // Check if it's a network error (no response from server)
+// // //       if (!error.response && error.request) {
+// // //         // Request was made but no response - Network/CORS/Server down
+// // //         errorMsg =
+// // //           "❌ Network Error: Could not reach server \n\n" +
+// // //           "This could be:\n" +
+// // //           "• Server is offline\n" +
+// // //           "• Network connection problem\n" +
+// // //           "• CORS blocking the request\n\n" +
+// // //           "Trying to reach: https://lawnode.rxchartsquare.com/admin/login";
+// // //       } else if (error.code === "ECONNABORTED") {
+// // //         errorMsg = "⏱️ Request Timeout: Server took too long to respond";
+// // //       } else if (error.response?.status === 401) {
+// // //         errorMsg = "🔐 Unauthorized: Invalid email or password";
+// // //       } else if (error.response?.status === 404) {
+// // //         errorMsg = "🚫 Not Found: Server endpoint doesn't exist";
+// // //       } else if (error.response?.status === 500) {
+// // //         errorMsg =
+// // //           "💥 Server Error: " +
+// // //           (error.response?.data?.message || "Internal server error");
+// // //       } else if (error.response?.data?.message) {
+// // //         errorMsg = "⚠️ " + error.response.data.message;
+// // //       } else if (error.message) {
+// // //         errorMsg = "❌ " + error.message;
+// // //       }
+
+// // //       console.error("Final error message:", errorMsg);
+// // //       toast.error(errorMsg);
+// // //     } finally {
+// // //       setLoading(false);
+// // //     }
+// // //   };
+
+// // //   return (
+// // //     <div
+// // //       className="bg-white d-flex align-items-center"
+// // //       style={{ minHeight: "100vh" }}>
+// // //       <Container>
+// // //         <Row className="justify-content-center">
+// // //           <Col md={5} lg={4}>
+// // //             <Card className="border-0 shadow-lg p-4">
+// // //               <div className="text-center mb-4">
+// // //                 <h2 className="mb-1">
+// // //                   Article<span className="text-warning">Flow</span>
+// // //                 </h2>
+// // //                 <p className="text-muted small">
+// // //                   Sign in to start your session
+// // //                 </p>
+// // //               </div>
+// // //               <Form onSubmit={handleLogin}>
+// // //                 <Form.Group className="mb-3">
+// // //                   <Form.Label className="fw-bold">Email Address</Form.Label>
+// // //                   <Form.Control
+// // //                     type="email"
+// // //                     placeholder="Enter email"
+// // //                     value={email}
+// // //                     required
+// // //                     onChange={(e) => setEmail(e.target.value)}
+// // //                   />
+// // //                 </Form.Group>
+// // //                 <Form.Group className="mb-4">
+// // //                   <Form.Label className="fw-bold">Password</Form.Label>
+// // //                   <Form.Control
+// // //                     type="password"
+// // //                     placeholder="Enter password"
+// // //                     value={password}
+// // //                     required
+// // //                     onChange={(e) => setPassword(e.target.value)}
+// // //                   />
+// // //                 </Form.Group>
+// // //                 <Button
+// // //                   variant="dark"
+// // //                   type="submit"
+// // //                   className="w-100 py-2 fw-bold"
+// // //                   disabled={loading}>
+// // //                   {loading ? "Logging in..." : "LOG IN"}
+// // //                 </Button>
+// // //               </Form>
+// // //             </Card>
+// // //           </Col>
+// // //         </Row>
+// // //       </Container>
+// // //     </div>
+// // //   );
+// // // };
+
+// // // export default Login;
+
+// // import React, { useState } from "react";
+// // import {
+// //   Form,
+// //   Button,
+// //   Card,
+// //   Container,
+// //   Row,
+// //   Col,
+// //   Modal,
+// // } from "react-bootstrap";
+// // import { useNavigate } from "react-router-dom";
+// // import { toast } from "react-toastify";
+// // import {
+// //   adminLogin,
+// //   forgotPassword,
+// //   verifyOtp,
+// //   resetPassword,
+// // } from "../Services/adminService";
+
+// // const Login = () => {
+// //   const navigate = useNavigate();
+// //   const [email, setEmail] = useState("");
+// //   const [password, setPassword] = useState("");
+// //   const [loading, setLoading] = useState(false);
+
+// //   // --- Forgot Password States ---
+// //   const [showForgotModal, setShowForgotModal] = useState(false);
+// //   const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: Reset
+// //   const [forgotEmail, setForgotEmail] = useState("");
+// //   const [otp, setOtp] = useState("");
+// //   const [newPassword, setNewPassword] = useState("");
+// //   const [confirmPassword, setConfirmPassword] = useState("");
+
+// //   const handleLogin = async (e) => {
+// //     e.preventDefault();
+// //     try {
+// //       setLoading(true);
+// //       const response = await adminLogin({ email, password });
+// //       if (response?.status) {
+// //         toast.success("Login Successful");
+// //         navigate("/admin/dashboard");
+// //       }
+// //     } catch (error) {
+// //       toast.error(error.response?.data?.message || "Login Failed");
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   };
+
+// //   // --- Forgot Password Logic ---
+// //   // --- Update Send OTP Logic ---
+// //   const handleSendOtp = async () => {
+// //     const cleanEmail = forgotEmail.trim(); // Remove spaces
+// //     if (!cleanEmail) return toast.warning("Please enter email");
+
+// //     try {
+// //       setLoading(true);
+// //       const res = await forgotPassword(cleanEmail);
+// //       if (res.status) {
+// //         toast.success("OTP sent to your email");
+// //         setStep(2);
+// //       }
+// //     } catch (err) {
+// //       // Show the specific error from server (e.g., "User not found")
+// //       const serverMsg = err.response?.data?.message || "Failed to send OTP";
+// //       toast.error(serverMsg);
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   };
+
+// //   // --- Update Verify OTP Logic ---
+// //   const handleVerifyOtp = async () => {
+// //     try {
+// //       setLoading(true);
+// //       const res = await verifyOtp(forgotEmail.trim(), otp.trim());
+
+// //       // Yahan check karein: Agar res.status true hai YA res khud exist karta hai (kyunki 200 status code aa chuka hai)
+// //       if (res) {
+// //         toast.success("OTP Verified Successfully");
+// //         setStep(3); // Yeh step change karega password reset par
+// //       }
+// //     } catch (err) {
+// //       console.error("OTP Error:", err.response?.data);
+// //       toast.error(err.response?.data?.message || "Invalid OTP");
+// //     } finally {
+// //       setLoading(false);
+// //     }
+// //   };
+// // const handleResetSubmit = async () => {
+// //   if (newPassword !== confirmPassword)
+// //     return toast.error("Passwords do not match");
+
+// //   try {
+// //     setLoading(true);
+// //     // API Expects: email, newPassword, confirmPassword
+// //     const res = await resetPassword({
+// //       email: forgotEmail.trim(), // Humne step 1 mein jo save kiya tha
+// //       newPassword: newPassword,
+// //       confirmPassword: confirmPassword,
+// //     });
+
+// //     if (res) {
+// //       toast.success("Password Reset Successful! Please login.");
+// //       setShowForgotModal(false); // Modal close
+// //       setStep(1); // Reset step for next time
+// //       // Clear fields
+// //       setForgotEmail("");
+// //       setOtp("");
+// //       setNewPassword("");
+// //       setConfirmPassword("");
+// //     }
+// //   } catch (err) {
+// //     toast.error(err.response?.data?.message || "Reset failed");
+// //   } finally {
+// //     setLoading(false);
+// //   }
+// // };
+// //   return (
+// //     <div
+// //       className="bg-light d-flex align-items-center"
+// //       style={{ minHeight: "100vh" }}>
+// //       <Container>
+// //         <Row className="justify-content-center">
+// //           <Col md={5} lg={4}>
+// //             <Card className="border-0 shadow-lg p-4">
+// //               <div className="text-center mb-4">
+// //                 <h2>
+// //                   Article<span className="text-warning">Flow</span>
+// //                 </h2>
+// //                 <p className="text-muted small">Login Admin Panel</p>
+// //               </div>
+// //               <Form onSubmit={handleLogin}>
+// //                 <Form.Group className="mb-3">
+// //                   <Form.Label>Email</Form.Label>
+// //                   <Form.Control
+// //                     type="email"
+// //                     value={email}
+// //                     onChange={(e) => setEmail(e.target.value)}
+// //                     required
+// //                   />
+// //                 </Form.Group>
+// //                 <Form.Group className="mb-3">
+// //                   <Form.Label>Password</Form.Label>
+// //                   <Form.Control
+// //                     type="password"
+// //                     value={password}
+// //                     onChange={(e) => setPassword(e.target.value)}
+// //                     required
+// //                   />
+// //                 </Form.Group>
+
+// //                 <div className="text-end mb-3">
+// //                   <Button
+// //                     variant="link"
+// //                     className="p-0 text-decoration-none small text-primary"
+// //                     onClick={() => setShowForgotModal(true)}>
+// //                     Forgot Password?
+// //                   </Button>
+// //                 </div>
+
+// //                 <Button
+// //                   variant="dark"
+// //                   type="submit"
+// //                   className="w-100 fw-bold"
+// //                   disabled={loading}>
+// //                   {loading ? "Please wait..." : "LOG IN"}
+// //                 </Button>
+// //               </Form>
+// //             </Card>
+// //           </Col>
+// //         </Row>
+// //       </Container>
+
+// //       {/* Forgot Password Modal */}
+// //       <Modal
+// //         show={showForgotModal}
+// //         onHide={() => setShowForgotModal(false)}
+// //         centered>
+// //         <Modal.Header closeButton>
+// //           <Modal.Title>Reset Password</Modal.Title>
+// //         </Modal.Header>
+// //         <Modal.Body>
+// //           {step === 1 && (
+// //             <div>
+// //               <Form.Label>Enter your registered email</Form.Label>
+// //               <Form.Control
+// //                 type="email"
+// //                 placeholder="name@example.com"
+// //                 value={forgotEmail}
+// //                 onChange={(e) => setForgotEmail(e.target.value)}
+// //               />
+// //               <Button
+// //                 className="mt-3 w-100"
+// //                 variant="dark"
+// //                 onClick={handleSendOtp}
+// //                 disabled={loading}>
+// //                 Send OTP
+// //               </Button>
+// //             </div>
+// //           )}
+// //           {step === 2 && (
+// //             <div>
+// //               <Form.Label>Enter OTP sent to {forgotEmail}</Form.Label>
+// //               <Form.Control
+// //                 type="text"
+// //                 placeholder="Enter OTP"
+// //                 value={otp}
+// //                 onChange={(e) => setOtp(e.target.value)}
+// //               />
+// //               <Button
+// //                 className="mt-3 w-100"
+// //                 variant="dark"
+// //                 onClick={handleVerifyOtp}
+// //                 disabled={loading}>
+// //                 Verify OTP
+// //               </Button>
+// //             </div>
+// //           )}
+// //           {step === 3 && (
+// //             <div>
+// //               <Form.Group className="mb-2">
+// //                 <Form.Label>New Password</Form.Label>
+// //                 <Form.Control
+// //                   type="password"
+// //                   value={newPassword}
+// //                   onChange={(e) => setNewPassword(e.target.value)}
+// //                 />
+// //               </Form.Group>
+// //               <Form.Group className="mb-3">
+// //                 <Form.Label>Confirm Password</Form.Label>
+// //                 <Form.Control
+// //                   type="password"
+// //                   value={confirmPassword}
+// //                   onChange={(e) => setConfirmPassword(e.target.value)}
+// //                 />
+// //               </Form.Group>
+// //               <Button
+// //                 className="w-100"
+// //                 variant="dark"
+// //                 onClick={handleResetSubmit}
+// //                 disabled={loading}>
+// //                 Reset Password
+// //               </Button>
+// //             </div>
+// //           )}
+// //         </Modal.Body>
+// //       </Modal>
+// //     </div>
+// //   );
+// // };;
+
+// // export default Login;
+
+// import React, { useState } from "react";
+// import {
+//   Form,
+//   Button,
+//   Card,
+//   Container,
+//   Row,
+//   Col,
+//   Modal,
+// } from "react-bootstrap";
 // import { useNavigate } from "react-router-dom";
 // import { toast } from "react-toastify";
-// import { adminLogin } from "../Services/adminService";
-
+// import {
+//   adminLogin,
+//   forgotPassword,
+//   verifyOtp,
+//   resetPassword,
+// } from "../Services/adminService";
+// import logo from '../assets/logo.png'
 // const Login = () => {
 //   const navigate = useNavigate();
 //   const [email, setEmail] = useState("");
 //   const [password, setPassword] = useState("");
 //   const [loading, setLoading] = useState(false);
 
-//   // Component mount check - CRITICAL for debugging
-//   useEffect(() => {
-//     try {
-//       console.log("=== LOGIN COMPONENT MOUNTED ===");
-//       console.log("Component is rendering successfully");
-//     } catch (e) {
-//       alert("Error in useEffect: " + e.message);
-//     }
-//     return () => {
-//       try {
-//         console.log("=== LOGIN COMPONENT UNMOUNTED ===");
-//       } catch (e) {
-//         alert("Error in cleanup: " + e.message);
-//       }
-//     };
-//   }, []);
+//   // --- Password Show/Hide States ---
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [showNewPassword, setShowNewPassword] = useState(false);
+//   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+//   // --- Forgot Password States ---
+//   const [showForgotModal, setShowForgotModal] = useState(false);
+//   const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: Reset
+//   const [forgotEmail, setForgotEmail] = useState("");
+//   const [otp, setOtp] = useState("");
+//   const [newPassword, setNewPassword] = useState("");
+//   const [confirmPassword, setConfirmPassword] = useState("");
 
 //   const handleLogin = async (e) => {
 //     e.preventDefault();
-
 //     try {
-//       console.log("=== LOGIN CLICKED ===");
-//       console.log("Email:", email);
-
-//       if (!email || !password) {
-//         console.error("Missing email or password");
-//         toast.error("Please enter email and password");
-//         return;
-//       }
-
 //       setLoading(true);
-//       console.log("Sending login request...");
-
-//       const response = await adminLogin({
-//         email: email.trim(),
-//         password: password.trim(),
-//       });
-//       console.log("Response received:", response);
-
-//       if (response && response.status === true) {
-//         console.log("✅ LOGIN SUCCESS");
-//         toast.success(response.message || "Login Successful");
+//       const response = await adminLogin({ email, password });
+//       if (response?.status) {
+//         toast.success("Login Successful");
 //         navigate("/admin/dashboard");
-//       } else {
-//         console.error("Login failed");
-//         toast.error(response?.message || "Login Failed");
 //       }
 //     } catch (error) {
-//       console.error("❌ LOGIN ERROR");
-//       console.error("Error full object:", error);
-//       console.error("Error.code:", error.code);
-//       console.error("Error.message:", error.message);
-//       console.error("Error.response:", error.response);
-//       console.error("Error.request:", error.request);
+//       toast.error(error.response?.data?.message || "Login Failed");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-//       let errorMsg = "An error occurred";
+//   // --- Forgot Password Logic ---
+//   const handleSendOtp = async () => {
+//     const cleanEmail = forgotEmail.trim();
+//     if (!cleanEmail) return toast.warning("Please enter email");
 
-//       // Check if it's a network error (no response from server)
-//       if (!error.response && error.request) {
-//         // Request was made but no response - Network/CORS/Server down
-//         errorMsg =
-//           "❌ Network Error: Could not reach server \n\n" +
-//           "This could be:\n" +
-//           "• Server is offline\n" +
-//           "• Network connection problem\n" +
-//           "• CORS blocking the request\n\n" +
-//           "Trying to reach: https://lawnode.rxchartsquare.com/admin/login";
-//       } else if (error.code === "ECONNABORTED") {
-//         errorMsg = "⏱️ Request Timeout: Server took too long to respond";
-//       } else if (error.response?.status === 401) {
-//         errorMsg = "🔐 Unauthorized: Invalid email or password";
-//       } else if (error.response?.status === 404) {
-//         errorMsg = "🚫 Not Found: Server endpoint doesn't exist";
-//       } else if (error.response?.status === 500) {
-//         errorMsg =
-//           "💥 Server Error: " +
-//           (error.response?.data?.message || "Internal server error");
-//       } else if (error.response?.data?.message) {
-//         errorMsg = "⚠️ " + error.response.data.message;
-//       } else if (error.message) {
-//         errorMsg = "❌ " + error.message;
+//     try {
+//       setLoading(true);
+//       const res = await forgotPassword(cleanEmail);
+//       if (res.status) {
+//         toast.success("OTP sent to your email");
+//         setStep(2);
 //       }
+//     } catch (err) {
+//       const serverMsg = err.response?.data?.message || "Failed to send OTP";
+//       toast.error(serverMsg);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-//       console.error("Final error message:", errorMsg);
-//       toast.error(errorMsg);
+//   const handleVerifyOtp = async () => {
+//     try {
+//       setLoading(true);
+//       const res = await verifyOtp(forgotEmail.trim(), otp.trim());
+//       if (res) {
+//         toast.success("OTP Verified Successfully");
+//         setStep(3);
+//       }
+//     } catch (err) {
+//       console.error("OTP Error:", err.response?.data);
+//       toast.error(err.response?.data?.message || "Invalid OTP");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleResetSubmit = async () => {
+//     if (newPassword !== confirmPassword)
+//       return toast.error("Passwords do not match");
+
+//     try {
+//       setLoading(true);
+//       const res = await resetPassword({
+//         email: forgotEmail.trim(),
+//         newPassword: newPassword,
+//         confirmPassword: confirmPassword,
+//       });
+
+//       if (res) {
+//         toast.success("Password Reset Successful! Please login.");
+//         setShowForgotModal(false);
+//         setStep(1);
+//         setForgotEmail("");
+//         setOtp("");
+//         setNewPassword("");
+//         setConfirmPassword("");
+//       }
+//     } catch (err) {
+//       toast.error(err.response?.data?.message || "Reset failed");
 //     } finally {
 //       setLoading(false);
 //     }
@@ -102,53 +529,190 @@
 
 //   return (
 //     <div
-//       className="bg-white d-flex align-items-center"
+//       className="bg-light d-flex align-items-center"
 //       style={{ minHeight: "100vh" }}>
 //       <Container>
 //         <Row className="justify-content-center">
 //           <Col md={5} lg={4}>
 //             <Card className="border-0 shadow-lg p-4">
 //               <div className="text-center mb-4">
-//                 <h2 className="mb-1">
-//                   Article<span className="text-warning">Flow</span>
-//                 </h2>
-//                 <p className="text-muted small">
-//                   Sign in to start your session
-//                 </p>
+//                <div className="d-none d-lg-block p-4 text-center border-bottom border-secondary">
+//                       <img src={logo} alt="Logo" style={{ height: "50px", width: "auto" }} />
+//                     </div>
+
+//                 <p className="text-muted small">Login Admin Panel</p>
 //               </div>
 //               <Form onSubmit={handleLogin}>
 //                 <Form.Group className="mb-3">
-//                   <Form.Label className="fw-bold">Email Address</Form.Label>
+//                   <Form.Label>Email</Form.Label>
 //                   <Form.Control
 //                     type="email"
-//                     placeholder="Enter email"
+//                     placeholder="Enter your email"
 //                     value={email}
-//                     required
 //                     onChange={(e) => setEmail(e.target.value)}
-//                   />
-//                 </Form.Group>
-//                 <Form.Group className="mb-4">
-//                   <Form.Label className="fw-bold">Password</Form.Label>
-//                   <Form.Control
-//                     type="password"
-//                     placeholder="Enter password"
-//                     value={password}
 //                     required
-//                     onChange={(e) => setPassword(e.target.value)}
 //                   />
 //                 </Form.Group>
+
+//                 <Form.Group className="mb-3">
+//                   <Form.Label>Password</Form.Label>
+//                   <div className="position-relative">
+//                     <Form.Control
+//                       type={showPassword ? "text" : "password"}
+//                       placeholder="Enter your password"
+//                       value={password}
+//                       onChange={(e) => setPassword(e.target.value)}
+//                       required
+//                     />
+//                     <span
+//                       onClick={() => setShowPassword(!showPassword)}
+//                       style={{
+//                         position: "absolute",
+//                         right: "12px",
+//                         top: "50%",
+//                         transform: "translateY(-50%)",
+//                         cursor: "pointer",
+//                         zIndex: 10,
+//                         color: "#6c757d",
+//                       }}>
+//                       <i
+//                         className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+//                     </span>
+//                   </div>
+//                 </Form.Group>
+
+//                 <div className="text-end mb-3">
+//                   <Button
+//                     variant="link"
+//                     className="p-0 text-decoration-none small text-primary"
+//                     onClick={() => setShowForgotModal(true)}>
+//                     Forgot Password?
+//                   </Button>
+//                 </div>
+
 //                 <Button
 //                   variant="dark"
 //                   type="submit"
-//                   className="w-100 py-2 fw-bold"
+//                   className="w-100 fw-bold"
 //                   disabled={loading}>
-//                   {loading ? "Logging in..." : "LOG IN"}
+//                   {loading ? "Please wait..." : "LOG IN"}
 //                 </Button>
 //               </Form>
 //             </Card>
 //           </Col>
 //         </Row>
 //       </Container>
+
+//       {/* Forgot Password Modal */}
+//       <Modal
+//         show={showForgotModal}
+//         onHide={() => setShowForgotModal(false)}
+//         centered>
+//         <Modal.Header closeButton>
+//           <Modal.Title>Reset Password</Modal.Title>
+//         </Modal.Header>
+//         <Modal.Body>
+//           {step === 1 && (
+//             <div>
+//               <Form.Label>Enter your registered email</Form.Label>
+//               <Form.Control
+//                 type="email"
+//                 placeholder="name@example.com"
+//                 value={forgotEmail}
+//                 onChange={(e) => setForgotEmail(e.target.value)}
+//               />
+//               <Button
+//                 className="mt-3 w-100"
+//                 variant="dark"
+//                 onClick={handleSendOtp}
+//                 disabled={loading}>
+//                 Send OTP
+//               </Button>
+//             </div>
+//           )}
+//           {step === 2 && (
+//             <div>
+//               <Form.Label>Enter OTP sent to {forgotEmail}</Form.Label>
+//               <Form.Control
+//                 type="text"
+//                 placeholder="Enter 6-digit OTP"
+//                 value={otp}
+//                 onChange={(e) => setOtp(e.target.value)}
+//               />
+//               <Button
+//                 className="mt-3 w-100"
+//                 variant="dark"
+//                 onClick={handleVerifyOtp}
+//                 disabled={loading}>
+//                 Verify OTP
+//               </Button>
+//             </div>
+//           )}
+//           {step === 3 && (
+//             <div>
+//               <Form.Group className="mb-2">
+//                 <Form.Label>New Password</Form.Label>
+//                 <div className="position-relative">
+//                   <Form.Control
+//                     type={showNewPassword ? "text" : "password"}
+//                     placeholder="Enter new password"
+//                     value={newPassword}
+//                     onChange={(e) => setNewPassword(e.target.value)}
+//                   />
+//                   <span
+//                     onClick={() => setShowNewPassword(!showNewPassword)}
+//                     style={{
+//                       position: "absolute",
+//                       right: "12px",
+//                       top: "50%",
+//                       transform: "translateY(-50%)",
+//                       cursor: "pointer",
+//                       zIndex: 10,
+//                       color: "#6c757d",
+//                     }}>
+//                     <i
+//                       className={`bi ${showNewPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+//                   </span>
+//                 </div>
+//               </Form.Group>
+
+//               <Form.Group className="mb-3">
+//                 <Form.Label>Confirm Password</Form.Label>
+//                 <div className="position-relative">
+//                   <Form.Control
+//                     type={showConfirmPassword ? "text" : "password"}
+//                     placeholder="Confirm new password"
+//                     value={confirmPassword}
+//                     onChange={(e) => setConfirmPassword(e.target.value)}
+//                   />
+//                   <span
+//                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+//                     style={{
+//                       position: "absolute",
+//                       right: "12px",
+//                       top: "50%",
+//                       transform: "translateY(-50%)",
+//                       cursor: "pointer",
+//                       zIndex: 10,
+//                       color: "#6c757d",
+//                     }}>
+//                     <i
+//                       className={`bi ${showConfirmPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+//                   </span>
+//                 </div>
+//               </Form.Group>
+
+//               <Button
+//                 className="w-100"
+//                 variant="dark"
+//                 onClick={handleResetSubmit}
+//                 disabled={loading}>
+//                 Reset Password
+//               </Button>
+//             </div>
+//           )}
+//         </Modal.Body>
+//       </Modal>
 //     </div>
 //   );
 // };
@@ -173,6 +737,7 @@ import {
   verifyOtp,
   resetPassword,
 } from "../Services/adminService";
+import logo from "../assets/logo.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -180,9 +745,14 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // --- Password Show/Hide States ---
+  const [showPassword, setShowPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   // --- Forgot Password States ---
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: Reset
+  const [step, setStep] = useState(1);
   const [forgotEmail, setForgotEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -205,11 +775,9 @@ const Login = () => {
   };
 
   // --- Forgot Password Logic ---
-  // --- Update Send OTP Logic ---
   const handleSendOtp = async () => {
-    const cleanEmail = forgotEmail.trim(); // Remove spaces
+    const cleanEmail = forgotEmail.trim();
     if (!cleanEmail) return toast.warning("Please enter email");
-
     try {
       setLoading(true);
       const res = await forgotPassword(cleanEmail);
@@ -218,113 +786,130 @@ const Login = () => {
         setStep(2);
       }
     } catch (err) {
-      // Show the specific error from server (e.g., "User not found")
-      const serverMsg = err.response?.data?.message || "Failed to send OTP";
-      toast.error(serverMsg);
+      toast.error(err.response?.data?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
   };
 
-  // --- Update Verify OTP Logic ---
   const handleVerifyOtp = async () => {
     try {
       setLoading(true);
       const res = await verifyOtp(forgotEmail.trim(), otp.trim());
-
-      // Yahan check karein: Agar res.status true hai YA res khud exist karta hai (kyunki 200 status code aa chuka hai)
       if (res) {
         toast.success("OTP Verified Successfully");
-        setStep(3); // Yeh step change karega password reset par
+        setStep(3);
       }
     } catch (err) {
-      console.error("OTP Error:", err.response?.data);
       toast.error(err.response?.data?.message || "Invalid OTP");
     } finally {
       setLoading(false);
     }
   };
-const handleResetSubmit = async () => {
-  if (newPassword !== confirmPassword)
-    return toast.error("Passwords do not match");
 
-  try {
-    setLoading(true);
-    // API Expects: email, newPassword, confirmPassword
-    const res = await resetPassword({
-      email: forgotEmail.trim(), // Humne step 1 mein jo save kiya tha
-      newPassword: newPassword,
-      confirmPassword: confirmPassword,
-    });
-
-    if (res) {
-      toast.success("Password Reset Successful! Please login.");
-      setShowForgotModal(false); // Modal close
-      setStep(1); // Reset step for next time
-      // Clear fields
-      setForgotEmail("");
-      setOtp("");
-      setNewPassword("");
-      setConfirmPassword("");
+  const handleResetSubmit = async () => {
+    if (newPassword !== confirmPassword)
+      return toast.error("Passwords do not match");
+    try {
+      setLoading(true);
+      const res = await resetPassword({
+        email: forgotEmail.trim(),
+        newPassword: newPassword,
+        confirmPassword: confirmPassword,
+      });
+      if (res) {
+        toast.success("Password Reset Successful! Please login.");
+        setShowForgotModal(false);
+        setStep(1);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Reset failed");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    toast.error(err.response?.data?.message || "Reset failed");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
   return (
     <div
       className="bg-light d-flex align-items-center"
       style={{ minHeight: "100vh" }}>
       <Container>
         <Row className="justify-content-center">
-          <Col md={5} lg={4}>
-            <Card className="border-0 shadow-lg p-4">
-              <div className="text-center mb-4">
-                <h2>
-                  Article<span className="text-warning">Flow</span>
-                </h2>
-                <p className="text-muted small">Login Admin Panel</p>
+          <Col xs={11} sm={8} md={5} lg={4}>
+            <Card className="border-0 shadow-lg overflow-hidden">
+              {/* --- Fixed Logo Section --- */}
+              <div className="text-center p-4 bg-white">
+                <img
+                  src={logo}
+                  alt="Article Logo"
+                  className="img-fluid"
+                  style={{
+                    maxHeight: "65px",
+                    width: "auto",
+                    objectFit: "contain",
+                  }}
+                />
+                <h5 className="mt-3 fw-bold text-dark mb-0">Admin Portal</h5>
+                <p className="text-muted small">
+                  Sign in to manage your content
+                </p>
               </div>
-              <Form onSubmit={handleLogin}>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </Form.Group>
 
-                <div className="text-end mb-3">
+              <Card.Body className="px-4 pb-4 pt-0">
+                <Form onSubmit={handleLogin}>
+                  <Form.Group className="mb-3">
+                    <Form.Label className="small fw-bold">
+                      Email Address
+                    </Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="admin@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-2">
+                    <Form.Label className="small fw-bold">Password</Form.Label>
+                    <div className="position-relative">
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <span
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="position-absolute end-0 top-50 translate-middle-y me-3 cursor-pointer text-muted"
+                        style={{ zIndex: 10, cursor: "pointer" }}>
+                        <i
+                          className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                      </span>
+                    </div>
+                  </Form.Group>
+
+                  <div className="text-end mb-4">
+                    <Button
+                      variant="link"
+                      className="p-0 text-decoration-none small fw-medium"
+                      onClick={() => setShowForgotModal(true)}>
+                      Forgot Password?
+                    </Button>
+                  </div>
+
                   <Button
-                    variant="link"
-                    className="p-0 text-decoration-none small text-primary"
-                    onClick={() => setShowForgotModal(true)}>
-                    Forgot Password?
+                    variant="dark"
+                    type="submit"
+                    className="w-100 py-2 fw-bold shadow-sm"
+                    disabled={loading}>
+                    {loading ? "AUTHENTICATING..." : "LOG IN"}
                   </Button>
-                </div>
-
-                <Button
-                  variant="dark"
-                  type="submit"
-                  className="w-100 fw-bold"
-                  disabled={loading}>
-                  {loading ? "Please wait..." : "LOG IN"}
-                </Button>
-              </Form>
+                </Form>
+              </Card.Body>
             </Card>
+            
           </Col>
         </Row>
       </Container>
@@ -334,13 +919,16 @@ const handleResetSubmit = async () => {
         show={showForgotModal}
         onHide={() => setShowForgotModal(false)}
         centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Reset Password</Modal.Title>
+        <Modal.Header closeButton className="border-0 pb-0">
+          <Modal.Title className="fw-bold">Reset Password</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="p-4">
           {step === 1 && (
             <div>
-              <Form.Label>Enter your registered email</Form.Label>
+              <p className="text-muted small">
+                Enter your email and we'll send you an OTP.
+              </p>
+              <Form.Label className="small fw-bold">Email Address</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="name@example.com"
@@ -348,25 +936,29 @@ const handleResetSubmit = async () => {
                 onChange={(e) => setForgotEmail(e.target.value)}
               />
               <Button
-                className="mt-3 w-100"
+                className="mt-3 w-100 fw-bold"
                 variant="dark"
                 onClick={handleSendOtp}
                 disabled={loading}>
-                Send OTP
+                {loading ? "Sending..." : "Send OTP"}
               </Button>
             </div>
           )}
           {step === 2 && (
             <div>
-              <Form.Label>Enter OTP sent to {forgotEmail}</Form.Label>
+              <p className="text-muted small">
+                We've sent a 6-digit code to <b>{forgotEmail}</b>
+              </p>
+              <Form.Label className="small fw-bold">Enter OTP</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter OTP"
+                placeholder="000000"
+                className="text-center fw-bold letter-spacing-2"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
               />
               <Button
-                className="mt-3 w-100"
+                className="mt-3 w-100 fw-bold"
                 variant="dark"
                 onClick={handleVerifyOtp}
                 disabled={loading}>
@@ -376,28 +968,46 @@ const handleResetSubmit = async () => {
           )}
           {step === 3 && (
             <div>
-              <Form.Group className="mb-2">
-                <Form.Label>New Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
+              <Form.Group className="mb-3">
+                <Form.Label className="small fw-bold">New Password</Form.Label>
+                <div className="position-relative">
+                  <Form.Control
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                  <span
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="position-absolute end-0 top-50 translate-middle-y me-3 cursor-pointer">
+                    <i
+                      className={`bi ${showNewPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </span>
+                </div>
               </Form.Group>
               <Form.Group className="mb-3">
-                <Form.Label>Confirm Password</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
+                <Form.Label className="small fw-bold">
+                  Confirm Password
+                </Form.Label>
+                <div className="position-relative">
+                  <Form.Control
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                  <span
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="position-absolute end-0 top-50 translate-middle-y me-3 cursor-pointer">
+                    <i
+                      className={`bi ${showConfirmPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
+                  </span>
+                </div>
               </Form.Group>
               <Button
-                className="w-100"
+                className="w-100 fw-bold"
                 variant="dark"
                 onClick={handleResetSubmit}
                 disabled={loading}>
-                Reset Password
+                Update Password
               </Button>
             </div>
           )}
@@ -405,6 +1015,6 @@ const handleResetSubmit = async () => {
       </Modal>
     </div>
   );
-};;
+};
 
 export default Login;

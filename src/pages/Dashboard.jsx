@@ -1,66 +1,80 @@
-// // import React from "react";
-// // import { Row, Col, Card } from "react-bootstrap";
-
-// // const Dashboard = () => {
-// //   const stats = [
-// //     { title: "Total User", count: "150", icon: "👤" },
-// //     { title: "Total Post", count: "45", icon: "📝" },
-// //     { title: "Total Category", count: "12", icon: "📁" },
-// //     { title: "Total Comments", count: "320", icon: "💬" },
-// //   ];
-
-// //   return (
-// //     <div className="container-fluid py-4">
-// //       <h2 className="mb-4">Dashboard Overview</h2>
-// //       <Row>
-// //         {stats.map((item, i) => (
-// //           <Col md={3} key={i} className="mb-4">
-// //             <Card
-// //               className="border-0 shadow-sm p-3 text-center"
-// //               style={{ borderLeft: "5px solid var(--accent)" }}>
-// //               <div className="text-muted small fw-bold text-uppercase">
-// //                 {item.title}
-// //               </div>
-// //               <div className="h2 fw-bold mb-0 mt-2">{item.count}</div>
-// //             </Card>
-// //           </Col>
-// //         ))}
-// //       </Row>
-// //     </div>
-// //   );
-// // };
-
-// // export default Dashboard;
-
-// import React from "react";
-// import { Row, Col, Card, Container } from "react-bootstrap";
-
+// import React, { useState, useEffect } from "react";
+// import { Row, Col, Card, Container, Spinner } from "react-bootstrap";
+// import {
+//   getAllUsers,
+//   getAllArticles,
+//   getAllCategories,
+//   getAllComments,
+// } from "../Services/adminService";
 // const Dashboard = () => {
+//   // State for dynamic counts
+//   const [statsData, setStatsData] = useState({
+//     users: 0,
+//     articles: 0,
+//     categories: 0,
+//     comments: 0,
+//   });
+//   const [loading, setLoading] = useState(true);
+
+//   // Fetch all counts on component mount
+//   useEffect(() => {
+//     const fetchDashboardStats = async () => {
+//       try {
+//         setLoading(true);
+//         // Saari APIs ko ek saath call kar rahe hain performance ke liye
+//         const [usersRes, articlesRes, categoriesRes, commentsRes] =
+//           await Promise.all([
+//             getAllUsers(),
+//             getAllArticles(),
+//             getAllCategories(),
+//             getAllComments(),
+//           ]);
+
+//         // Backend response structure ke mutabiq length nikalna
+//         setStatsData({
+//           users: usersRes.users?.length || usersRes.data?.length || 0,
+//           articles:
+//             articlesRes.articles?.length || articlesRes.data?.length || 0,
+//           categories:
+//             categoriesRes.categories?.length || categoriesRes.data?.length || 0,
+//           comments:
+//             commentsRes.comments?.length || commentsRes.data?.length || 0,
+//         });
+//       } catch (error) {
+//         console.error("Error fetching dashboard stats:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchDashboardStats();
+//   }, []);
+
 //   const stats = [
 //     {
 //       title: "Total User",
-//       count: "150",
+//       count: statsData.users,
 //       icon: "bi bi-people",
 //       colorClass: "text-primary",
 //       bgClass: "bg-primary",
 //     },
 //     {
 //       title: "Total Post",
-//       count: "45",
+//       count: statsData.articles,
 //       icon: "bi bi-file-earmark-text",
 //       colorClass: "text-warning",
 //       bgClass: "bg-warning",
 //     },
 //     {
 //       title: "Total Category",
-//       count: "12",
+//       count: statsData.categories,
 //       icon: "bi bi-grid",
 //       colorClass: "text-success",
 //       bgClass: "bg-success",
 //     },
 //     {
 //       title: "Total Comments",
-//       count: "320",
+//       count: statsData.comments,
 //       icon: "bi bi-chat-dots",
 //       colorClass: "text-danger",
 //       bgClass: "bg-danger",
@@ -88,30 +102,36 @@
 //                     <p className="text-muted small fw-bold text-uppercase mb-1">
 //                       {item.title}
 //                     </p>
-//                     <h3 className="fw-bold m-0">{item.count}</h3>
+//                     <h3 className="fw-bold m-0">
+//                       {loading ? (
+//                         <Spinner
+//                           animation="border"
+//                           size="sm"
+//                           variant="secondary"
+//                         />
+//                       ) : (
+//                         item.count
+//                       )}
+//                     </h3>
 //                   </div>
-//                   {/* Icon with light background using Bootstrap utility classes */}
-
+//                   {/* Icon section (as per your original code) */}
+//                   {/* <div
+//                     className={`p-3 rounded-circle bg-opacity-10 ${item.bgClass.replace("bg-", "text-")}`}
+//                     style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
+//                     <i className={`${item.icon} h4 mb-0`}></i>
+//                   </div> */}
 //                 </div>
 //                 {/* Optional small detail text */}
-//                 <div className="mt-3 small">
-//                   <span className="text-success fw-bold">
-//                     <i className="bi bi-arrow-up-short"></i> 12%
-//                   </span>
-//                   <span className="text-muted ms-1">Since last month</span>
-//                 </div>
 //               </Card.Body>
 //             </Card>
 //           </Col>
 //         ))}
 //       </Row>
-
 //     </Container>
 //   );
 // };
 
 // export default Dashboard;
-
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card, Container, Spinner } from "react-bootstrap";
 import {
@@ -120,8 +140,8 @@ import {
   getAllCategories,
   getAllComments,
 } from "../Services/adminService";
+
 const Dashboard = () => {
-  // State for dynamic counts
   const [statsData, setStatsData] = useState({
     users: 0,
     articles: 0,
@@ -130,12 +150,10 @@ const Dashboard = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Fetch all counts on component mount
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
         setLoading(true);
-        // Saari APIs ko ek saath call kar rahe hain performance ke liye
         const [usersRes, articlesRes, categoriesRes, commentsRes] =
           await Promise.all([
             getAllUsers(),
@@ -144,7 +162,6 @@ const Dashboard = () => {
             getAllComments(),
           ]);
 
-        // Backend response structure ke mutabiq length nikalna
         setStatsData({
           users: usersRes.users?.length || usersRes.data?.length || 0,
           articles:
@@ -166,76 +183,71 @@ const Dashboard = () => {
 
   const stats = [
     {
-      title: "Total User",
+      title: "TOTAL USER",
       count: statsData.users,
       icon: "bi bi-people",
-      colorClass: "text-primary",
-      bgClass: "bg-primary",
+      color: "#4f46e5",
     },
     {
-      title: "Total Post",
+      title: "TOTAL POST",
       count: statsData.articles,
       icon: "bi bi-file-earmark-text",
-      colorClass: "text-warning",
-      bgClass: "bg-warning",
+      color: "#f59e0b",
     },
     {
-      title: "Total Category",
+      title: "TOTAL CATEGORY",
       count: statsData.categories,
       icon: "bi bi-grid",
-      colorClass: "text-success",
-      bgClass: "bg-success",
+      color: "#10b981",
     },
     {
-      title: "Total Comments",
+      title: "TOTAL COMMENTS",
       count: statsData.comments,
       icon: "bi bi-chat-dots",
-      colorClass: "text-danger",
-      bgClass: "bg-danger",
+      color: "#ef4444",
     },
   ];
 
   return (
     <Container fluid className="py-4">
-      {/* Header Section */}
+      {/* Header Section - Fixed */}
       <div className="mb-4">
-        <h2 className="fw-bold m-0">Dashboard Overview</h2>
-        <p className="text-muted small">
+        <h2 className="fw-bold mb-2 text-dark">Dashboard Overview</h2>
+        <p className="text-muted mb-4">
           Welcome back, Admin! Here's what's happening today.
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <Row>
+      {/* Stats Cards - Improved Responsive Grid */}
+      <Row className="g-3">
         {stats.map((item, i) => (
-          <Col xl={3} md={6} key={i} className="mb-4">
-            <Card className="border-0 shadow-sm rounded-3">
-              <Card.Body className="p-4">
-                <div className="d-flex align-items-center justify-content-between">
-                  <div>
-                    <p className="text-muted small fw-bold text-uppercase mb-1">
-                      {item.title}
-                    </p>
-                    <h3 className="fw-bold m-0">
-                      {loading ? (
-                        <Spinner
-                          animation="border"
-                          size="sm"
-                          variant="secondary"
-                        />
-                      ) : (
-                        item.count
-                      )}
-                    </h3>
-                  </div>
-                  {/* Icon section (as per your original code) */}
-                  {/* <div
-                    className={`p-3 rounded-circle bg-opacity-10 ${item.bgClass.replace("bg-", "text-")}`}
-                    style={{ backgroundColor: "rgba(0,0,0,0.05)" }}>
-                    <i className={`${item.icon} h4 mb-0`}></i>
-                  </div> */}
+          <Col xs={12} sm={6} md={3} key={i} className="mb-3">
+            <Card
+              className="border-0 shadow-sm h-100"
+              style={{ minHeight: "120px" }}>
+              <Card.Body className="p-3 d-flex flex-column justify-content-center align-items-center text-center">
+                {/* Count with large font */}
+                <h1
+                  className="display-6 fw-bold mb-2"
+                  style={{ color: item.color }}>
+                  {loading ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : (
+                    item.count
+                  )}
+                </h1>
+
+                {/* Title */}
+                <p className="text-muted mb-0 small fw-bold text-uppercase">
+                  {item.title}
+                </p>
+
+                {/* Optional icon */}
+                <div className="mt-2">
+                  <i
+                    className={`${item.icon} fs-5`}
+                    style={{ color: item.color }}></i>
                 </div>
-                {/* Optional small detail text */}
               </Card.Body>
             </Card>
           </Col>

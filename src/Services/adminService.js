@@ -1,39 +1,39 @@
 import API from "./api";
 
-export const IMG_URL = "https://lawnode.rxchartsquare.com/";
+export const IMG_URL = "https://lawnode.rxchartsquare.com"; // Fixed: Trailing slash hataya
 
+// --- Helper: Image URL processing with Cache Buster ---
 export const getFullImageUrl = (path) => {
   if (!path || typeof path !== "string") {
     return "https://placehold.co/50x40?text=NA";
   }
 
-  // If already full URL
+  // 1. Agar URL pehle se hi full (Cloudinary/External) hai
   if (path.startsWith("http")) {
-    return path;
+    return `${path}?t=${new Date().getTime()}`; // Cache bust karne ke liye
   }
 
-  // Clean path
+  // 2. Local Path clean-up
   let cleanPath = path.replace(/\\/g, "/");
 
-  // Remove leading slash
   if (cleanPath.startsWith("/")) {
     cleanPath = cleanPath.substring(1);
   }
 
-  // Ensure uploads/ prefix
-  if (!cleanPath.startsWith("uploads/")) {
+  // Ensure uploads/ prefix (Agar backend 'uploads/' ke sath nahi deta)
+  if (!cleanPath.startsWith("uploads/") && !cleanPath.startsWith("public/")) {
     cleanPath = `uploads/${cleanPath}`;
   }
 
-  return `${IMG_URL}${cleanPath}`;
+  return `${IMG_URL}/${cleanPath}?t=${new Date().getTime()}`;
 };
+// ==========================
+// 1. ARTICLE METHODS
+// ==========================
 
-// REMOVE /api prefix - backend doesn't have it
 export const getAllArticles = async () => {
   try {
-    console.log("🔍 Fetching articles from: /article/get-all");
     const response = await API.get("/article/get-all");
-    console.log("✅ Articles fetched successfully");
     return response.data;
   } catch (error) {
     console.error("❌ Error fetching articles:", error);
@@ -43,70 +43,49 @@ export const getAllArticles = async () => {
 
 export const createArticle = async (formData) => {
   try {
-    console.log("📝 Creating article at: /article/create");
-    const response = await API.post("/article/create", formData);
+    const response = await API.post("/article/create", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   } catch (error) {
-    console.error("❌ Error creating article:", error);
     throw error;
   }
 };
 
 export const updateArticle = async (id, formData) => {
   try {
-    console.log("🔄 Updating article at: /article/update/" + id);
-    console.log("FormData contents:");
-
-    // Log what's in formData
-    for (let [key, value] of formData.entries()) {
-      if (key === "featureImage" && value instanceof File) {
-        console.log(
-          `${key}: File - ${value.name} (${value.type}, ${value.size} bytes)`,
-        );
-      } else {
-        console.log(`${key}: ${value}`);
-      }
-    }
-
-    const response = await API.put(`/article/update/${id}`, formData);
+    console.log(`🔄 Updating article ID: ${id}`);
+    
+    // Request bhejne se pehle headers ensure karein
+    const response = await API.put(`/article/update/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    
     console.log("✅ Update response:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ Error updating article:", error);
-
-    // Log more details
-    if (error.response) {
-      console.error("Response status:", error.response.status);
-      console.error("Response headers:", error.response.headers);
-      console.error("Response data:", error.response.data);
-    }
-
+    console.error("❌ Error updating article:", error.response?.data || error.message);
     throw error;
   }
 };
 
 export const deleteArticle = async (id) => {
   try {
-    console.log("🗑️ Deleting article at: /article/delete/" + id);
     const response = await API.delete(`/article/delete/${id}`);
     return response.data;
   } catch (error) {
-    console.error("❌ Error deleting article:", error);
     throw error;
   }
 };
 
-// Optional: Get single article by ID
 export const getArticleById = async (id) => {
   try {
     const response = await API.get(`/article/get-by-id/${id}`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching article:", error);
     throw error;
   }
 };
-
 export const adminLogin = async (credentials) => {
   try {
     console.log("📤 Login request:", credentials.email);
@@ -251,7 +230,9 @@ export const getAllCategories = async () => {
     throw error;
   }
 };
-
+export const getCategoryById = (id) => {
+  return apiClient.get(`/category/get-by-id/${id}`);
+};
 export const createCategory = async (data) => {
   try {
     console.log("🚀 Flow: Creating Category Payload:", data);
@@ -311,7 +292,30 @@ export const getAllSubCategories = async () => {
     throw error;
   }
 };
+// Temporary fix - direct API call
+export const getSubCategoryById = (id) => {
+  const token = localStorage.getItem("adminToken");
 
+  return fetch(
+    `https://lawnode.rxchartsquare.com/subCategory/get-by-id/${id}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json",
+      },
+    },
+  )
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("SubCategory by ID response:", data);
+      return data;
+    })
+    .catch((error) => {
+      console.error("Error fetching subcategory:", error);
+      throw error;
+    });
+};
 export const createSubCategory = async (data) => {
   try {
     // Parameters expected: category (ID), subCategoryName
@@ -328,17 +332,29 @@ export const createSubCategory = async (data) => {
   }
 };
 
-export const updateSubCategory = async (id, data) => {
+// adminService.js (Sirf updateSubCategory wala hissa badlein ya check karein)
+
+export const updateSubCategory = async (id, formData) => {
   try {
-    // Parameters expected: categoryName (sub-name), note, status
-    console.log(`🔄 Flow: Updating SubCategory ID: ${id}`, data);
-    const response = await API.put(`/subcategory/update/${id}`, data);
+    console.log(`🔄 Flow: Updating SubCategory ID: ${id}`);
+    
+    // Debugging ke liye FormData check karein
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
+
+    const response = await API.put(`/subcategory/update/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
     console.log("✅ Flow: Update SubCategory Response:", response.data);
     return response.data;
   } catch (error) {
     console.error(
       "❌ Flow: Update SubCategory Error:",
-      error.response?.data || error.message,
+      error.response?.data || error.message
     );
     throw error;
   }
@@ -358,6 +374,7 @@ export const deleteSubCategory = async (id) => {
     throw error;
   }
 };
+
 // // ==========================
 // // ARTICLE METHODS
 // // ==========================
@@ -395,6 +412,8 @@ export const deleteSubCategory = async (id) => {
 // Get all users
 export const getAllUsers = async () => {
   const response = await API.get("/user/get-all");
+  console.log("user", response.data);
+
   return response.data;
 };
 
@@ -488,141 +507,108 @@ export const deleteComment = async (id) => {
   }
 };
 
-
 // ========== ABOUT US APIs ==========
+// --- ABOUT US APIs ---
 export const getAllAboutUs = async () => {
-  try {
-    console.log("📋 Fetching About Us data");
-    const response = await API.get("/aboutus/get-all");
-    console.log("✅ About Us fetched:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ Error fetching About Us:", error);
-    throw error;
-  }
+  const response = await API.get("/aboutus/get-all");
+  return response.data; // Response contains status, data { mission, sections }
 };
+export const createAboutUs = (formData) =>
+  API.post("/aboutus/create", formData);
+export const updateAboutUs = (id, formData) =>
+  API.put(`/aboutus/update/${id}`, formData);
+export const deleteAboutUs = (id) => API.delete(`/aboutus/delete/${id}`);
 
-export const getAboutUsById = async (id) => {
-  try {
-    const response = await API.get(`/aboutus/get-by-id/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching About Us by ID:", error);
-    throw error;
-  }
+
+
+// --- TERMS & CONDITIONS APIs ---
+export const getAllTerms = async () => {
+  const res = await API.get("/terms/get-all");
+  console.log("GET ALL TERMS:", res.data);
+  return res.data;
 };
+export const createTerms = (data) => API.post("/terms/create", data);
+export const updateTerms = (id, data) => API.put(`/terms/update/${id}`, data);
+export const deleteTerms = (id) => API.delete(`/terms/delete/${id}`);
 
-export const createAboutUs = async (formData) => {
-  try {
-    console.log("📝 Creating About Us");
-    const response = await API.post("/aboutus/create", formData);
-    console.log("✅ About Us created:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ Error creating About Us:", error);
-    throw error;
-  }
+// --- PRIVACY POLICY APIs ---
+export const getAllPrivacy = async () => {
+  const res = await API.get("/privacy/get-all");
+  console.log("GET ALL PRIVACY:", res.data);
+  return res.data;
 };
+export const createPrivacy = (data) => API.post("/privacy/create", data);
+export const updatePrivacy = (id, data) =>
+  API.put(`/privacy/update/${id}`, data);
+export const deletePrivacy = (id) => API.delete(`/privacy/delete/${id}`);
 
-export const updateAboutUs = async (id, formData) => {
-  try {
-    console.log(`🔄 Updating About Us ID: ${id}`);
-    const response = await API.put(`/aboutus/update/${id}`, formData);
-    console.log("✅ About Us updated:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ Error updating About Us:", error);
-    throw error;
-  }
-};
 
-export const deleteAboutUs = async (id) => {
-  try {
-    console.log(`🗑️ Deleting About Us ID: ${id}`);
-    const response = await API.delete(`/aboutus/delete/${id}`);
-    console.log("✅ About Us deleted:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ Error deleting About Us:", error);
-    throw error;
-  }
-};
+// ==========================================
+// ADMIN CONTACT US METHODS (Fixed)
+// ==========================================
 
-// ========== CONTACT US APIs ==========
-export const getAllContactUs = async () => {
-  try {
-    console.log("📋 Fetching Contact Us data");
-    const response = await API.get("/contactus/get-all");
-    console.log("✅ Contact Us fetched:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("❌ Error fetching Contact Us:", error);
-    throw error;
-  }
-};
-
-export const getContactUsById = async (id) => {
-  try {
-    const response = await API.get(`/contactus/get-by-id/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching Contact Us by ID:", error);
-    throw error;
-  }
-};
-
+// 1. Create Contact Us
 export const createContactUs = async (data) => {
+  console.log("API CALL: Create Contact Us - Data:", data);
   try {
-    console.log("📝 Creating Contact Us");
-    const response = await API.post("/contactus/create", data);
-    console.log("✅ Contact Us created:", response.data);
+    // raw axios ki jagah API instance use karein
+    const response = await API.post("/admin-contact/create", data);
+    console.log("API RESPONSE: Create Contact Us:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ Error creating Contact Us:", error);
+    console.error("API ERROR: Create Contact Us:", error);
     throw error;
   }
 };
 
+// 2. Get All Contact Us
+export const getAllContactUs = async () => {
+  console.log("API CALL: Get All Contact Us");
+  try {
+    const response = await API.get("/admin-contact/get-all");
+    console.log("API RESPONSE: Get All Contact Us:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("API ERROR: Get All Contact Us:", error);
+    throw error;
+  }
+};
+
+// 3. Get Contact Us By ID
+export const getContactById = async (id) => {
+  console.log(`API CALL: Get Contact By ID - ID: ${id}`);
+  try {
+    const response = await API.get(`/admin-contact/get-by-id/${id}`);
+    console.log("API RESPONSE: Get Contact By ID:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("API ERROR: Get Contact By ID:", error);
+    throw error;
+  }
+};
+
+// 4. Update Contact Us
 export const updateContactUs = async (id, data) => {
+  console.log(`API CALL: Update Contact Us - ID: ${id}, Data:`, data);
   try {
-    console.log(`🔄 Updating Contact Us ID: ${id}`);
-    const response = await API.put(`/contactus/update/${id}`, data);
-    console.log("✅ Contact Us updated:", response.data);
+    const response = await API.put(`/admin-contact/update/${id}`, data);
+    console.log("API RESPONSE: Update Contact Us:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ Error updating Contact Us:", error);
+    console.error("API ERROR: Update Contact Us:", error);
     throw error;
   }
 };
 
+// 5. Delete Contact Us
 export const deleteContactUs = async (id) => {
+  console.log(`API CALL: Delete Contact Us - ID: ${id}`);
   try {
-    console.log(`🗑️ Deleting Contact Us ID: ${id}`);
-    const response = await API.delete(`/contactus/delete/${id}`);
-    console.log("✅ Contact Us deleted:", response.data);
+    const response = await API.delete(`/admin-contact/delete/${id}`);
+    console.log("API RESPONSE: Delete Contact Us:", response.data);
     return response.data;
   } catch (error) {
-    console.error("❌ Error deleting Contact Us:", error);
-    throw error;
-  }
-};
-
-
-
-// ========== NEW: Get all APIs in one place ==========
-export const getAllSettingsData = async () => {
-  try {
-    const [aboutRes, contactRes] = await Promise.all([
-      getAllAboutUs(),
-      getAllContactUs(),
-    ]);
-
-    return {
-      about: aboutRes,
-      contact: contactRes,
-    };
-  } catch (error) {
-    console.error("Error fetching settings data:", error);
+    console.error("API ERROR: Delete Contact Us:", error);
     throw error;
   }
 };
