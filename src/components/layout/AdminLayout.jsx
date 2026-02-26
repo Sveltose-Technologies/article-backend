@@ -57,10 +57,9 @@ const AdminLayout = () => {
   return (
     <div className="admin-wrapper">
       {/* Desktop Sidebar */}
-      <aside className="desktop-sidebar">
+      <aside className="desktop-sidebar" style={{ width: "260px" }}>
         <Sidebar />
       </aside>
-
       {/* Mobile Sidebar */}
       <div className={`mobile-sidebar ${sidebarOpen ? "open" : ""}`}>
         {sidebarOpen && (
@@ -70,7 +69,6 @@ const AdminLayout = () => {
           <Sidebar onClose={closeSidebar} />
         </div>
       </div>
-
       {/* Main Content Area */}
       <div className="main-content">
         <Header toggleSidebar={toggleSidebar} />

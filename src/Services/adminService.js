@@ -1,6 +1,6 @@
 import API from "./api";
 
-export const IMG_URL = "https://lawnode.rxchartsquare.com"; // Fixed: Trailing slash hataya
+export const IMG_URL = "https://node.sapiencedesk.com"; 
 
 // --- Helper: Image URL processing with Cache Buster ---
 export const getFullImageUrl = (path) => {
@@ -533,13 +533,18 @@ export const deleteTerms = (id) => API.delete(`/terms/delete/${id}`);
 
 // --- PRIVACY POLICY APIs ---
 export const getAllPrivacy = async () => {
-  const res = await API.get("/privacy/get-all");
-  console.log("GET ALL PRIVACY:", res.data);
-  return res.data;
+  try {
+    const res = await API.get("/privacy/get-all");
+    console.log("GET ALL PRIVACY:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error("❌ Error fetching privacy policies:", error.response?.data || error.message);
+    throw error;
+  }
 };
+
 export const createPrivacy = (data) => API.post("/privacy/create", data);
-export const updatePrivacy = (id, data) =>
-  API.put(`/privacy/update/${id}`, data);
+export const updatePrivacy = (id, data) => API.put(`/privacy/update/${id}`, data);
 export const deletePrivacy = (id) => API.delete(`/privacy/delete/${id}`);
 
 
@@ -609,6 +614,45 @@ export const deleteContactUs = async (id) => {
     return response.data;
   } catch (error) {
     console.error("API ERROR: Delete Contact Us:", error);
+    throw error;
+  }
+};
+// Services/adminService.js में जोड़ें
+// --- Payment Services (Using the API instance above) ---
+
+// Get All Payments
+export const getAllPayments = async () => {
+  try {
+    // यहाँ apiCall की जगह API.get() का इस्तेमाल होगा
+    const response = await API.get("/payment/getall");
+    // Axios में डेटा response.data के अंदर आता है
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching all payments:", error);
+    throw error;
+  }
+};
+
+// Get Payments by User ID
+export const getPaymentsByUserId = async (userId) => {
+  try {
+    const response = await API.get(`/payment/get-by-userId/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching payments for user ${userId}:`, error);
+    throw error;
+  }
+};
+
+
+
+// Add this to your adminService.js
+export const deletePaymentRecord = async (userId) => {
+  try {
+    // As per your requirement: GET /payment/get-by-userId/:userId
+    const response = await API.get(`/payment/get-by-userId/${userId}`);
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };

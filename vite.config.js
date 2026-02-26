@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://lawnode.rxchartsquare.com/",
+        target: "https://node.sapiencedesk.com",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
